@@ -5,6 +5,9 @@ const dialogflow = require('dialogflow');
 const _ = require('lodash')
 const uuidv4 = require('uuid/v4');
 
+console.log(process.env.PORT)
+console.log(process.env.DIALOGFLOW_AGENT_PRIVATE_KEY)
+
 // Express constants
 const port = process.env.PORT;
 
@@ -20,7 +23,6 @@ const config = {
     "client_email": process.env.DIALOGFLOW_CLIENT_EMAIL,
   },
 }
-
 
 // Instantiate express server
 const app = express()
