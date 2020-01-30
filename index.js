@@ -13,6 +13,15 @@ const projectId = process.env.PROJECT_ID;
 const sessionId = uuidv4();
 const languageCode = process.env.LANGUAGE_CODE;
 
+// Dialogflow client options
+const config = {
+  credentials: {
+    "private_key": process.env.DIALOGFLOW_AGENT_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    "client_email": process.env.DIALOGFLOW_CLIENT_EMAIL,
+  },
+}
+
+
 // Instantiate express server
 const app = express()
 app.use(cors())
@@ -26,7 +35,7 @@ async function detectIntent(
   contexts,
   languageCode
 ) {
-  const sessionClient = new dialogflow.SessionsClient();
+  const sessionClient = new dialogflow.SessionsClient(config);
 
   // The path to identify the agent that owns the created intent.
   const sessionPath = sessionClient.sessionPath(projectId, sessionId);
