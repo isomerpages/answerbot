@@ -52,7 +52,7 @@ botswannaScript.onload = () => {
     }
   }).$mount('#botswanna')
   
-  botswanna.listen(async({value}) => {
+  botswanna.listen(async ({ value, trigger }) => {
     const fetchConfig = {
       method: 'POST',
       headers: {
@@ -62,7 +62,18 @@ botswannaScript.onload = () => {
       body: JSON.stringify({query: value})
     }
     let resp = await fetch(ASKGOVSG_ENDPOINT, fetchConfig)
-    let { answer } = await resp.json()
-    botswanna.sendMessage('text', { content: answer, bot: true })
+    let { answer, suggestions } = await resp.json()
+
+    if (answer) {
+      botswanna.sendMessage('text', { content: answer, bot: true })
+    }
+
+    if (suggestions) {
+      botswanna.sendMessage('buttons', {
+        buttons: suggestions.suggestions.suggestions.map(suggestion => {
+          return { title: suggestion.title, value: suggestion.title }
+        }),
+      })
+    }
   })
 }
