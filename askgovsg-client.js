@@ -1,4 +1,4 @@
-const ASKGOVSG_ENDPOINT = 'http://isomer-chatbot-test.8cfjvba2cv.ap-southeast-1.elasticbeanstalk.com/'
+const ASKGOVSG_ENDPOINT = 'https://askgov.isomerpages.com/'
 
 const currScript = document.getElementById('askgov')
 const colorScheme = currScript.dataset.colors
@@ -19,8 +19,10 @@ let vueScript = document.createElement("script")
 vueScript.src = "https://cdn.jsdelivr.net/npm/vue/dist/vue.js"
 let vuexScript = document.createElement("script")
 vuexScript.src = "https://unpkg.com/vuex"
+let domPurifyScript = document.createElement("script")
+domPurifyScript.src = "https://answerbot.s3-ap-southeast-1.amazonaws.com/botswanna/dompurify.min.js"
 
-document.head.append(botswannaStyles, botswannaCustomColors, vueScript, vuexScript)
+document.head.append(botswannaStyles, botswannaCustomColors, vueScript, vuexScript, domPurifyScript)
 
 // Load botswanna script after div is created
 let botswannaDiv = document.createElement("div")
@@ -53,25 +55,28 @@ botswannaScript.onload = () => {
   }).$mount('#botswanna')
   
   botswanna.listen(async ({ value, trigger }) => {
+    const sanitizedQuery = DOMPurify.sanitize(value)
     const fetchConfig = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       referrerPolicy: 'no-referrer',
-      body: JSON.stringify({query: value})
+      body: JSON.stringify({query: sanitizedQuery})
     }
     let resp = await fetch(ASKGOVSG_ENDPOINT, fetchConfig)
     let { answer, suggestions } = await resp.json()
 
+    const sanitizedAnswer = DOMPurify.sanitize(answer)
     if (answer) {
-      botswanna.sendMessage('text', { content: answer, bot: true })
+      botswanna.sendMessage('text', { content: sanitizedAnswer, bot: true })
     }
 
     if (suggestions) {
       botswanna.sendMessage('buttons', {
         buttons: suggestions.suggestions.suggestions.map(suggestion => {
-          return { title: suggestion.title, value: suggestion.title }
+          const sanitizedTitle = DOMPurify.sanitize(suggestion.title)
+          return { title: sanitizedTitle, value: sanitizedTitle }
         }),
       })
     }
