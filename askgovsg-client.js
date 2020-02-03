@@ -60,8 +60,9 @@ botswannaScript.onload = () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
+        'Referrer': window.location.origin
       },
-      referrerPolicy: 'no-referrer',
+      referrerPolicy: 'origin',
       body: JSON.stringify({query: sanitizedQuery})
     }
     let resp = await fetch(ASKGOVSG_ENDPOINT, fetchConfig)
